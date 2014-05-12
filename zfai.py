@@ -78,22 +78,23 @@ def macro_machineGunOnOff(parts):
 	
 	return strs
 
-def macro_linearMove(parts, waitTimeDuration, moveTimeDuration, startDist, endDist, waitDist):
+def macro_linearMove(parts, waitTimeDuration, moveTimeDuration, startDist, endDist, waitDist = None, startTimeOffset = 0):
 	strs = []
 	
 	startMoveTime = int(waitTimeDuration)
 	totalTime = int(waitTimeDuration) + int(moveTimeDuration)
 	
 	distToTravel = endDist - startDist
-	distPerStep = math.floor(distToTravel / moveTimeDuration)
+	distPerStep = float(distToTravel) / moveTimeDuration
 	
 	# Wait: set distance to static location
-	setDistCmd = setDistance(parts, waitDist)
-	strs.append(
-		makeTriggerRepeat(0, totalTime, setDistCmd)
-	)
+	if (waitDist != None):
+		setDistCmd = setDistance(parts, waitDist)
+		strs.append(
+			makeTriggerRepeat(0, totalTime, setDistCmd)
+		)
 	
-	# Move: distance chages over time
+	# Move: distance changes over time
 	for time in range(startMoveTime, totalTime):
 		timeDelta = time - startMoveTime
 		
@@ -101,7 +102,7 @@ def macro_linearMove(parts, waitTimeDuration, moveTimeDuration, startDist, endDi
 	
 		setDistCmd = setDistance(parts, newDist)
 		strs.append(
-			makeTriggerRepeat(time, totalTime, setDistCmd)
+			makeTriggerRepeat(time+startTimeOffset, totalTime, setDistCmd)
 		)
 	
 	return strs
