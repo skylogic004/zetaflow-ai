@@ -1,0 +1,22 @@
+makeInvincible, 8
+makeTrigger, death, 5, setWidth, 2000, 8
+makeTrigger, death, 5, setHeight, 2000, 8
+makeTrigger, death, 5, makeTrigger, time, 60, setWidth, 0, 8
+makeTrigger, death, 5, makeTrigger, time, 60, setHeight, 0, 8
+makeTrigger, death, 6, setWidth, 2000, 8
+makeTrigger, death, 6, setHeight, 2000, 8
+makeTrigger, death, 6, makeTrigger, time, 60, setWidth, 0, 8
+makeTrigger, death, 6, makeTrigger, time, 60, setHeight, 0, 8
+makeTrigger, death, 7, setWidth, 2000, 8
+makeTrigger, death, 7, setHeight, 2000, 8
+makeTrigger, death, 7, makeTrigger, time, 60, setWidth, 0, 8
+makeTrigger, death, 7, makeTrigger, time, 60, setHeight, 0, 8
+makeTrigger, death, 9, setDistance, 9999, 7
+setDistance, 9999, 12
+makeTrigger, death, 9, setDistance, 0, 12
+makeTrigger, death, 12, setDistance, 9999, 5
+setDistance, 9999, 13
+makeTrigger, death, 12, setDistance, 0, 13
+makeTrigger, death, 13, setDistance, 9999, 6
+setDistance, 9999, 14
+makeTrigger, death, 13, setDistance, 0, 14

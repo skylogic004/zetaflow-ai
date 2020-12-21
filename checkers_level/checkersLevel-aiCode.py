@@ -1,4 +1,5 @@
-from zfai import *
+from zf_function_wrappers import *
+from zf_macro_functions import *
 
 REPEAT_AFTER = 30
 
