@@ -6,7 +6,7 @@ This file holds functions that reproduce the commands available in the editor (h
 
 def parts_to_string(parts):
 	if (isinstance(parts, list)):
-		return ','.join(part_list_array)
+		return ','.join([str(x) for x in parts])
 	else:
 		return f'{parts}'
 
@@ -17,6 +17,10 @@ def randomRotate(speed):
 def makeInvincible(parts):
 	parts_str = parts_to_string(parts)
 	return f'makeInvincible, {parts_str}'
+
+def makeVulnerable(parts):
+	parts_str = parts_to_string(parts)
+	return f'makeVulnerable, {parts_str}'
 	
 def makeTriggerRepeat(START_FRAME, REPEAT_AFTER_FRAMES, ANY_COMMAND):
 	return 'makeTrigger, timeRepeat, %d, %d, %s' % (START_FRAME, REPEAT_AFTER_FRAMES, ANY_COMMAND)
@@ -34,13 +38,9 @@ def enableGun(parts):
 	parts_str = parts_to_string(parts)
 	return f'enableGun, {parts_str}'
 	
-def rotatePartToShip(parts):
-	parts_str = parts_to_string(parts)
-	return f'rotatePartToShip, {parts_str}'
-	
 def setDistance(parts, dist):
 	parts_str = parts_to_string(parts)
-	return f'setDistance, {dist:d}, {parts_str}'
+	return f'setDistance, {dist}, {parts_str}'
 
 def setGunTime(parts, time):
 	parts_str = parts_to_string(parts)
@@ -54,6 +54,16 @@ def setHeight(parts, height_percent):
 	parts_str = parts_to_string(parts)
 	return f'setHeight, {height_percent:d}, {parts_str}'
 
+def setHP(parts, hp):
+	parts_str = parts_to_string(parts)
+	return f'setHP, {hp}, {parts_str}'
+
+def setColor(parts, hex_color):
+	"""
+	color_hex: e.g. FF0000 for red
+	"""
+	parts_str = parts_to_string(parts)
+	return f'col, {hex_color}, {parts_str}'
 
 def destroy(parts):
 	parts_str = parts_to_string(parts)
@@ -66,7 +76,18 @@ def setSize(parts, percentage):
 	return strs
 
 def rotatePartToShip(parts):
-	return 'rotatePartToShip, %s' % (parts)
+	parts_str = parts_to_string(parts)
+	return f'rotatePartToShip, {parts_str}'
+
+def rotate(part, speed, min_angle=None, max_angle=None, start_angle=None):
+	assert isinstance(part, int)
+	if (min_angle is None and max_angle is None and start_angle is None):
+		return f'rotatePart, {part}, {speed}'
+	else:
+		assert min_angle is not None
+		assert max_angle is not None
+		assert start_angle is not None
+		return f'rotatePart, {part}, {speed}, {min_angle}, {max_angle}, {start_angle}'
 	
 def stop(cmd):
 	return 'stop, %s' % cmd

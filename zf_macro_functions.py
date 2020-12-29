@@ -2,7 +2,14 @@
 This file is for special functions for advanced functionality. 
 These are functions that build upon the basic components to build something more interesting.
 """
+from zf_common import secToFrames
+from zf_function_wrappers import *
 
+firing_time = {
+	'single': 100, # 100, 120
+	'spread': 300, # 300, 320, 480-492
+	'square': 111, # 110, 170
+}
 
 def macro_setSize(parts, size, START_FRAME, REPEAT_AFTER_FRAMES):
 	strs = []
@@ -13,23 +20,41 @@ def macro_setSize(parts, size, START_FRAME, REPEAT_AFTER_FRAMES):
 	return strs
 	
 # parts: list of Single Shot guns
-def macro_machineGun(parts):
-	return makeTriggerRepeat(0,5, setGunTime(parts, 98))
+def macro_machineGun(parts, gun_type, cooldown=5):
+	"""
+	cooldown: 2 is super frequent shots, 5 has nice delay while still being rapid
+	"""
+	t = firing_time[gun_type] - 2
+	return makeTriggerRepeat(0, cooldown, setGunTime(parts, t))
 
 # parts: list of Single Shot guns
-def macro_stopMachineGun(parts):
-	return stop(makeTriggerRepeat(0,5, setGunTime(parts, 98)))
+def macro_stopMachineGun(parts, gun_type, cooldown=5):
+	t = firing_time[gun_type] - 2
+	return stop(makeTriggerRepeat(0, cooldown, setGunTime(parts, t)))
 	
 # parts: list of Single Shot guns
-def macro_machineGunOnOff(parts):
+def macro_machineGunOnOff(parts, gun_type='single', off_seconds=6, on_seconds=4, cooldown=5, offset_seconds=0):
 	strs = []
+
+	if (cooldown <= 1):
+		print('WARNING: I dont think cooldown can be this low')
 	
-	phaseDuration = secToFrames(6)
-	strs.append( makeTriggerRepeat(secToFrames(0), phaseDuration, disableGun(parts)) )
-	strs.append( makeTriggerRepeat(secToFrames(0), phaseDuration, macro_stopMachineGun(parts)) )
-	strs.append( makeTriggerRepeat(secToFrames(4), phaseDuration, enableGun(parts)) )
-	strs.append( makeTriggerRepeat(secToFrames(4), phaseDuration, macro_machineGun(parts)) )
-	
+	phaseDuration = secToFrames(off_seconds+on_seconds)
+
+	# OLD VERSION
+	# this creates and disbands the repeating trigger REPEATEDLY
+	# strs.append( makeTriggerRepeat(secToFrames(offset_seconds), phaseDuration, disableGun(parts)) )
+	# strs.append( makeTriggerRepeat(secToFrames(offset_seconds), phaseDuration, macro_stopMachineGun(parts, gun_type, cooldown)) )
+	# strs.append( makeTriggerRepeat(secToFrames(offset_seconds+off_seconds), phaseDuration, enableGun(parts)) )
+	# strs.append( makeTriggerRepeat(secToFrames(offset_seconds+off_seconds), phaseDuration, macro_machineGun(parts, gun_type, cooldown)) )
+
+	# NEW VERSION
+	# this one lets the machine gun fire *all the time* but enables and disables the gun upon request
+	strs.append( makeTriggerRepeat(secToFrames(offset_seconds), phaseDuration, enableGun(parts)) )
+	strs.append( makeTriggerRepeat(secToFrames(offset_seconds+on_seconds), phaseDuration, disableGun(parts)) )
+	strs.append( macro_machineGun(parts, gun_type, cooldown) )
+
+
 	return strs
 
 def macro_linearMove(parts, waitTimeDuration, moveTimeDuration, startDist, endDist, waitDist = None, startTimeOffset = 0):
@@ -75,3 +100,21 @@ def macro_rotateToShipOnceRepeating(parts, rotateTime, cycleTime):
 	strs.append( makeTriggerRepeat(rotateTime, cycleTime, rotatePartToShip(parts)) )
 	strs.append( makeTriggerRepeat(rotateTime+1, cycleTime, stop(rotatePartToShip(parts))) )
 	return strs
+
+""" FRAME NUMBERS FOR setGunTime
+Spread
+40, 60
+Start spin
+173, ends 307
+
+
+Missile
+20 and 40
+Ends at 60
+
+Single shot keyframes at
+1,2,3,11
+
+Singu keyframes at
+1,2,10
+"""
